@@ -29,7 +29,8 @@ public class ElementItem extends Item implements Element {
     private final int color;
 
     public ElementItem(String pChemicalName, int pAtomicNumber, String pAbbreviation, int pGroup, int pPeriod, MatterState pMatterState, MetalType pMetalType, boolean pArtificial, String pColor) {
-        super(new FabricItemSettings().group(ItemRegistry.ELEMENTS_TAB));
+        /*super(new FabricItemSettings().group(ItemRegistry.ELEMENTS_TAB));*/
+        super(new FabricItemSettings());
         this.elementName = pChemicalName;
         this.atomicNumber = pAtomicNumber;
         this.abbreviation = pAbbreviation;

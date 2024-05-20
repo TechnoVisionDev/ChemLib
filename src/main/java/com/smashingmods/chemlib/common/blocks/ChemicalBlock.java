@@ -7,8 +7,8 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.client.color.block.BlockColorProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class ChemicalBlock extends Block implements Chemical {
 
@@ -22,7 +22,7 @@ public class ChemicalBlock extends Block implements Chemical {
     }
 
     public Chemical getChemical() {
-        return (Chemical) Registry.ITEM.get(chemical);
+        return (Chemical) Registries.ITEM.get(chemical);
     }
 
     public ChemicalBlockType getBlockType() {

@@ -4,10 +4,11 @@ import com.smashingmods.chemlib.api.ChemicalBlockType;
 import com.smashingmods.chemlib.common.blocks.ChemicalBlock;
 import com.smashingmods.chemlib.common.blocks.LampBlock;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.Material;
+import net.minecraft.block.Blocks;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -19,9 +20,9 @@ public class BlockRegistry {
     public static final List<ChemicalBlock> METAL_BLOCKS = new ArrayList<>();
     public static final List<ChemicalBlock> LAMP_BLOCKS = new ArrayList<>();
 
-    public static final FabricBlockSettings METAL_PROPERTIES = FabricBlockSettings.of(Material.METAL).strength(5.0f, 12.0f).sounds(BlockSoundGroup.METAL).requiresTool();
+    public static final FabricBlockSettings METAL_PROPERTIES = FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).strength(5.0f, 12.0f).sounds(BlockSoundGroup.METAL).requiresTool();
 
-    public static final FabricBlockSettings LAMP_PROPERTIES = FabricBlockSettings.of(Material.GLASS).strength(2.0f, 2.0f).sounds(BlockSoundGroup.GLASS).requiresTool().luminance(state -> state.get(LIT) ? 15 : 0);
+    public static final FabricBlockSettings LAMP_PROPERTIES = FabricBlockSettings.copyOf(Blocks.GLASS).strength(2.0f, 2.0f).sounds(BlockSoundGroup.GLASS).requiresTool().luminance(state -> state.get(LIT) ? 15 : 0);
 
     public static Optional<ChemicalBlock> getChemicalBlockByName(String name) {
         return getAllChemicalBlocks().stream().filter(blockRegistryObject -> blockRegistryObject.toString().equals(name)).findFirst();
@@ -72,7 +73,7 @@ public class BlockRegistry {
             chemicalBlock = new LampBlock(chemicalIdentifier, type, settings);
             LAMP_BLOCKS.add(chemicalBlock);
         }
-        Registry.register(Registry.BLOCK, blockIdentifier, chemicalBlock);
+        Registry.register(Registries.BLOCK, blockIdentifier, chemicalBlock);
         return chemicalBlock;
     }
 }

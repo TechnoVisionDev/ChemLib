@@ -7,10 +7,11 @@ import com.smashingmods.chemlib.common.fluids.ChemicalBucketItem;
 import com.smashingmods.chemlib.api.FluidAttributes;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.Material;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +38,8 @@ public class FluidRegistry {
         fluidSource.updateProperties(ref.properties);
         fluidFlowing.updateProperties(ref.properties);
 
-        ChemicalFluidBlock liquidBlock = new ChemicalFluidBlock(fluidSource, FabricBlockSettings.of(Material.WATER).noCollision().strength(100f).dropsNothing(), attributes.color);
-        ChemicalBucketItem bucket = new ChemicalBucketItem(fluidSource, new FabricItemSettings().group(ItemRegistry.MISC_TAB).recipeRemainder(Items.BUCKET).maxCount(1), attributes.color);
+        ChemicalFluidBlock liquidBlock = new ChemicalFluidBlock(fluidSource, FabricBlockSettings.copyOf(Blocks.WATER).noCollision().strength(100f).dropsNothing(), attributes.color);
+        ChemicalBucketItem bucket = new ChemicalBucketItem(fluidSource, new FabricItemSettings().recipeRemainder(Items.BUCKET).maxCount(1), attributes.color);
 
         ref.properties.slopeFindDistance(pSlopeFindDistance)
                 .levelDecreasePerBlock(pDecreasePerBlock)
@@ -52,10 +53,10 @@ public class FluidRegistry {
         LIQUID_BLOCKS.add(liquidBlock);
         BUCKETS.add(bucket);
 
-        Registry.register(Registry.FLUID, new Identifier(ChemLib.MOD_ID, String.format("%s_source", name)), fluidSource);
-        Registry.register(Registry.FLUID, new Identifier(ChemLib.MOD_ID, String.format("%s_flowing", name)), fluidFlowing);
-        Registry.register(Registry.BLOCK, new Identifier(ChemLib.MOD_ID, String.format("%s_liquid_block", name)), liquidBlock);
-        Registry.register(Registry.ITEM, new Identifier(ChemLib.MOD_ID, String.format("%s_bucket", name)), bucket);
+        Registry.register(Registries.FLUID, new Identifier(ChemLib.MOD_ID, String.format("%s_source", name)), fluidSource);
+        Registry.register(Registries.FLUID, new Identifier(ChemLib.MOD_ID, String.format("%s_flowing", name)), fluidFlowing);
+        Registry.register(Registries.BLOCK, new Identifier(ChemLib.MOD_ID, String.format("%s_liquid_block", name)), liquidBlock);
+        Registry.register(Registries.ITEM, new Identifier(ChemLib.MOD_ID, String.format("%s_bucket", name)), bucket);
     }
 
     public static List<ChemicalFluid> getFluids() {

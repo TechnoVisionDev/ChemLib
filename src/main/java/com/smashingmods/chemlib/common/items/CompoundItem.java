@@ -14,12 +14,10 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Map;
 
 @MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
 public class CompoundItem extends Item implements Chemical {
 
     private final String compoundName;
@@ -30,7 +28,8 @@ public class CompoundItem extends Item implements Chemical {
     private final int color;
 
     public CompoundItem(String pCompoundName, MatterState pMatterState, Map<String, Integer> pComponents, String pDescription, String pColor) {
-        super(new FabricItemSettings().group(ItemRegistry.COMPOUNDS_TAB));
+        /*super(new FabricItemSettings().group(ItemRegistry.COMPOUNDS_TAB));*/
+        super(new FabricItemSettings());
         this.compoundName = pCompoundName;
         this.matterState = pMatterState;
         this.components = pComponents;
