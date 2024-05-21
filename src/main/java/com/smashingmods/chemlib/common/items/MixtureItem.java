@@ -101,6 +101,10 @@ public class MixtureItem extends Item implements Chemical {
                 builder.append(getSubscript(Integer.toString(count)));
             }
         }
-        return builder.toString();
+
+        String str = builder.toString();
+        str = str.substring(3);
+
+        return str;
     }
 }
