@@ -15,11 +15,9 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 @MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
 public class ChemicalItem extends Item implements Chemical {
 
     private final Chemical chemical;

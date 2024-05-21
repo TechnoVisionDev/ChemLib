@@ -1,6 +1,6 @@
 ![lol](https://i.imgur.com/nRaok6G.png)
 
-[![](https://cf.way2muchnoise.eu/full_chemlib-fabric_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/chemlib-fabric) [![](https://cf.way2muchnoise.eu/packs/chemlib-fabric.svg)](https://www.curseforge.com/minecraft/mc-mods/chemlib-fabric) [![](https://cf.way2muchnoise.eu/versions/chemlib-fabric.svg)](https://www.curseforge.com/minecraft/mc-mods/chemlib-fabric) [![](https://jitpack.io/v/SmashingMods/ChemLib-Fabric.svg)](https://jitpack.io/#SmashingMods/ChemLib-Fabric)
+[![](https://cf.way2muchnoise.eu/full_chemlib-fabric_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/chemlib-fabric) [![](https://cf.way2muchnoise.eu/packs/chemlib-fabric.svg)](https://www.curseforge.com/minecraft/mc-mods/chemlib-fabric) [![](https://cf.way2muchnoise.eu/versions/chemlib-fabric.svg)](https://www.curseforge.com/minecraft/mc-mods/chemlib-fabric) [![](https://jitpack.io/v/Moriz82/ChemLib-Fabric.svg)](https://jitpack.io/#Moriz82/ChemLib-Fabric)
 
 # ChemLib - Fabric Library
 _This is a Fabric port of the original ChemLib Forge library by Dark_Arcana. It adds over 950+ items to Minecraft, including every known chemical element, compound, metal, liquid, and gas that exists in the real world. The purpose of this library is to provide a shared source of items, blocks, and fluids for chemistry and tech mods. It was originally developed for the Alchemistry mod but can be used by any mod!_

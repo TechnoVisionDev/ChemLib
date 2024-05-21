@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @MethodsReturnNonnullByDefault
-public class CompoundItem extends Item implements Chemical {
+public class MixtureItem extends Item implements Chemical {
 
     private final String compoundName;
     private String abbreviation = "";
@@ -27,7 +27,7 @@ public class CompoundItem extends Item implements Chemical {
     private final String description;
     private final int color;
 
-    public CompoundItem(String pCompoundName, MatterState pMatterState, Map<String, Integer> pComponents, String pDescription, String pColor) {
+    public MixtureItem(String pCompoundName, MatterState pMatterState, Map<String, Integer> pComponents, String pDescription, String pColor) {
         /*super(new FabricItemSettings().group(ItemRegistry.COMPOUNDS_TAB));*/
         super(new FabricItemSettings());
         this.compoundName = pCompoundName;
@@ -93,14 +93,20 @@ public class CompoundItem extends Item implements Chemical {
         StringBuilder builder = new StringBuilder();
 
         for (String name : components.keySet()) {
-            ItemRegistry.getElementByName(name).ifPresent(elementItem -> builder.append(elementItem.getAbbreviation()));
-            ItemRegistry.getCompoundByName(name).ifPresent(compoundItem -> builder.append(String.format("(%s)", compoundItem.getAbbreviation())));
+            ItemRegistry.getElementByName(name).ifPresent(elementItem -> builder.append(" + ").append(elementItem.getChemicalName()));
+            ItemRegistry.getCompoundByName(name).ifPresentOrElse(compoundItem -> builder.append(" + ").append(String.format("(%s)", compoundItem.getChemicalName())), ()->{
+                builder.append(" + ").append(name);
+            });
 
             Integer count = components.get(name);
             if (count > 1) {
                 builder.append(getSubscript(Integer.toString(count)));
             }
         }
-        return builder.toString();
+
+        String str = builder.toString();
+        str = str.substring(3);
+
+        return str;
     }
 }

@@ -5,6 +5,7 @@ import com.smashingmods.chemlib.ChemLib;
 import com.smashingmods.chemlib.api.Element;
 import com.smashingmods.chemlib.registry.ItemRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -20,8 +21,8 @@ public class PeriodicTableScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        renderBackground(matrices);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackground(context, mouseX, mouseY, delta);
 
         int imageWidth = 2000;
         int imageHeight = 1016;
@@ -30,11 +31,11 @@ public class PeriodicTableScreen extends Screen {
         int leftPos = (this.width - displayWidth) / 2;
         int topPos = (this.height - displayHeight) / 2;
 
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, new Identifier(ChemLib.MOD_ID, "textures/gui/periodic_table.png"));
-        drawTexture(matrices, leftPos, topPos, displayWidth, displayHeight, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
-        drawCenteredText(matrices, MinecraftClient.getInstance().textRenderer, Text.translatable("chemlib.screen.periodic_table").setStyle(Style.EMPTY.withColor(Formatting.BOLD)), width / 2, 24, 0xFFFFFF);
+        context.drawTexture(new Identifier(ChemLib.MOD_ID, "textures/gui/periodic_table.png"), leftPos, topPos, displayWidth, displayHeight, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
+        //context.drawCenteredText(matrices, MinecraftClient.getInstance().textRenderer, Text.translatable("chemlib.screen.periodic_table").setStyle(Style.EMPTY.withColor(Formatting.BOLD)), width / 2, 24, 0xFFFFFF);
 
         double boxWidth = 27.75f;
         double boxHeight = 26.9f;
@@ -54,7 +55,7 @@ public class PeriodicTableScreen extends Screen {
                         if (col == group) {
                             if (!((period == 6 || period == 7) && group == 3)) {
                                 if (mouseX >= x && mouseX < x + boxWidth && mouseY >= y && mouseY < y + boxHeight) {
-                                    drawElementTip(matrices, element);
+                                    drawElementTip(context, element);
                                 }
                             } else {
                                 double resetX = x;
@@ -63,7 +64,7 @@ public class PeriodicTableScreen extends Screen {
                                     y = (boxHeight * 7.45f) + startY;
                                     x = (boxWidth * count) + startX + boxWidth * 2;
                                     if (mouseX >= x && mouseX < x + boxWidth && mouseY >= y && mouseY < y + boxHeight) {
-                                        drawElementTip(matrices, element);
+                                        drawElementTip(context, element);
                                     }
                                     count++;
                                 }
@@ -71,7 +72,7 @@ public class PeriodicTableScreen extends Screen {
                                     y = (boxHeight * 8.45f) + startY;
                                     x = (boxWidth * (count - 15)) + startX + boxWidth * 2;
                                     if (mouseX >= x && mouseX < x + boxWidth && mouseY >= y && mouseY < y + boxHeight) {
-                                        drawElementTip(matrices, element);
+                                        drawElementTip(context, element);
                                     }
                                     count++;
                                 }
@@ -86,14 +87,20 @@ public class PeriodicTableScreen extends Screen {
                 y += boxHeight;
             }
         }
-        super.render(matrices, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
     }
 
-    private void drawElementTip(MatrixStack matrices, Element pElement) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    private void drawElementTip(DrawContext context, Element pElement) {
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, new Identifier(ChemLib.MOD_ID, String.format("textures/gui/elements/%s_tooltip.png", pElement.getChemicalName())));
-        drawTexture(matrices, ((this.width - 276) / 2) - 55, ((this.height - (7 * 28)) / 2) - 30, 274, 80, 0, 0, 40, 40, 40, 40);
+        context.drawTexture(new Identifier(ChemLib.MOD_ID, String.format("textures/gui/elements/%s_tooltip.png", pElement.getChemicalName())),
+                ((this.width - 276) / 2) - 55, ((this.height - (7 * 28)) / 2) - 30, 274, 80, 0, 0, 40, 40, 40, 40);
+    }
+
+    @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        //super.renderBackground(context, mouseX, mouseY, delta);
     }
 
     @Override

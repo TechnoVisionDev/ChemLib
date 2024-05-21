@@ -22,7 +22,7 @@ import java.util.List;
 public class PeriodicTableItem extends Item {
 
     public PeriodicTableItem() {
-        super(new FabricItemSettings().group(ItemRegistry.MISC_TAB).maxCount(1));
+        super(new FabricItemSettings());
     }
 
     @Override

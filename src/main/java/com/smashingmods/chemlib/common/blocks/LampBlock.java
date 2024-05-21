@@ -13,12 +13,10 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
 public class LampBlock extends ChemicalBlock {
 
     private static final BooleanProperty LIT = Properties.LIT;
@@ -40,7 +38,7 @@ public class LampBlock extends ChemicalBlock {
             boolean flag = state.get(LIT);
             if (flag != world.isReceivingRedstonePower(pos)) {
                 if (flag) {
-                    world.createAndScheduleBlockTick(pos, this, 4);
+                    world.scheduleBlockTick(pos, this, 4);
                 } else {
                     world.setBlockState(pos, state.cycle(LIT), 2);
                 }

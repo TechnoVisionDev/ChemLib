@@ -12,12 +12,17 @@ import com.smashingmods.chemlib.api.MetalType;
 import com.smashingmods.chemlib.common.blocks.ChemicalBlock;
 import com.smashingmods.chemlib.api.FluidAttributes;
 import com.smashingmods.chemlib.common.items.*;
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.*;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.Util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,51 +43,49 @@ public class ItemRegistry {
     public static final List<ChemicalBlockItem> CHEMICAL_BLOCK_ITEMS = new ArrayList<>();
     public static final PeriodicTableItem PERIODIC_TABLE_ITEM = new PeriodicTableItem();
 
-    public static final ItemGroup ELEMENTS_TAB = FabricItemGroupBuilder
-            .create(new Identifier(ChemLib.MOD_ID, "elements"))
+    public static final RegistryKey<ItemGroup> ELEMENTS_TAB = registerItemGroup("elements", FabricItemGroup.builder()
             .icon(() -> getElementByName("hydrogen").map(ItemStack::new).orElseGet(() -> new ItemStack(Items.AIR)))
-            .build();
-
-    public static final ItemGroup COMPOUNDS_TAB = FabricItemGroupBuilder
-            .create(new Identifier(ChemLib.MOD_ID, "compounds"))
-            .icon(() -> getCompoundByName("cellulose").map(ItemStack::new).orElseGet(() -> new ItemStack(Items.AIR)))
-            .appendItems(stacks -> {
-                stacks.clear();
-                List<ItemStack> compounds = getCompounds().stream().map(ItemStack::new).toList();
-                List<ItemStack> compoundDusts = getChemicalItemsByType(ChemicalItemType.COMPOUND).stream().map(ItemStack::new).toList();
-                stacks.addAll(compounds);
-                stacks.addAll(compoundDusts);
-            }).build();
-
-    public static final ItemGroup METALS_TAB = FabricItemGroupBuilder
-            .create(new Identifier(ChemLib.MOD_ID, "metals"))
-            .icon(() -> getChemicalItemByNameAndType("barium", ChemicalItemType.INGOT).map(ItemStack::new).orElseGet(() -> new ItemStack(Items.AIR)))
-            .appendItems(stacks -> {
-                stacks.clear();
-                List<ItemStack> dustStacks = getChemicalItemsByType(ChemicalItemType.DUST).stream().map(ItemStack::new).toList();
-                List<ItemStack> nuggetStacks = getChemicalItemsByType(ChemicalItemType.NUGGET).stream().map(ItemStack::new).toList();
-                List<ItemStack> ingotStacks = getChemicalItemsByType(ChemicalItemType.INGOT).stream().map(ItemStack::new).toList();
-                List<ItemStack> plateStacks = getChemicalItemsByType(ChemicalItemType.PLATE).stream().map(ItemStack::new).toList();
-                List<ItemStack> blockItemStacks = getChemicalBlockItems().stream().filter(item -> ((ChemicalBlock) item.getBlock()).getBlockType().asString().equals("metal")).map(ItemStack::new).toList();
-                stacks.addAll(ingotStacks);
-                stacks.addAll(blockItemStacks);
-                stacks.addAll(nuggetStacks);
-                stacks.addAll(dustStacks);
-                stacks.addAll(plateStacks);
-            }).build();
-
-    public static final ItemGroup MISC_TAB = FabricItemGroupBuilder
-            .create(new Identifier(ChemLib.MOD_ID, "misc"))
-            .icon(() -> getChemicalBlockItemByName("radon_lamp_block").map(ItemStack::new).orElseGet(() -> new ItemStack(Items.AIR)))
-            .appendItems(stacks -> {
-                stacks.clear();
-                List<ItemStack> lamps = BlockRegistry.getLampBlocks().stream().map(ItemStack::new).toList();
-                List<ItemStack> buckets = FluidRegistry.getBuckets().stream().map(ItemStack::new).toList();
-                stacks.add(new ItemStack(PERIODIC_TABLE_ITEM));
-                stacks.addAll(lamps);
-                stacks.addAll(buckets);
+            .entries((context, entries) -> {
+                getElements().stream().map(ItemStack::new).toList().forEach(entries::add);
             })
-            .build();
+    );
+
+    public static final RegistryKey<ItemGroup> COMPOUNDS_TAB = registerItemGroup("compounds", FabricItemGroup.builder()
+            .icon(() -> getCompoundByName("cellulose").map(ItemStack::new).orElseGet(() -> new ItemStack(Items.AIR)))
+            .entries((context, entries) -> {
+                getCompounds().stream().map(ItemStack::new).toList().forEach(entries::add);
+                getChemicalItemsByType(ChemicalItemType.COMPOUND).stream().map(ItemStack::new).toList().forEach(entries::add);
+            })
+    );
+
+    public static final RegistryKey<ItemGroup> METALS_TAB = registerItemGroup("metals", FabricItemGroup.builder()
+            .icon(() -> getChemicalItemByNameAndType("barium", ChemicalItemType.INGOT).map(ItemStack::new).orElseGet(() -> new ItemStack(Items.AIR)))
+            .entries((context, entries) -> {
+                getChemicalItemsByType(ChemicalItemType.DUST).stream().map(ItemStack::new).forEach(entries::add);
+                getChemicalItemsByType(ChemicalItemType.NUGGET).stream().map(ItemStack::new).toList().forEach(entries::add);
+                getChemicalItemsByType(ChemicalItemType.INGOT).stream().map(ItemStack::new).toList().forEach(entries::add);
+                getChemicalItemsByType(ChemicalItemType.PLATE).stream().map(ItemStack::new).toList().forEach(entries::add);
+                getChemicalBlockItems().stream().filter(item -> ((ChemicalBlock) item.getBlock()).getBlockType().asString().equals("metal")).map(ItemStack::new).toList().forEach(entries::add);
+            })
+    );
+
+    public static final RegistryKey<ItemGroup> MISC_TAB = registerItemGroup("misc", FabricItemGroup.builder()
+            .icon(() -> getChemicalBlockItemByName("radon_lamp_block").map(ItemStack::new).orElseGet(() -> new ItemStack(Items.AIR)))
+            .entries((context, entries) -> {
+                entries.add(new ItemStack(PERIODIC_TABLE_ITEM));
+                BlockRegistry.getLampBlocks().stream().map(ItemStack::new).toList().forEach(entries::add);
+                FluidRegistry.getBuckets().stream().map(ItemStack::new).toList().forEach(entries::add);
+            })
+    );
+
+    static RegistryKey<ItemGroup> registerItemGroup(String name, net.minecraft.item.ItemGroup.Builder builder) {
+        net.minecraft.registry.RegistryKey<net.minecraft.item.ItemGroup> key = net.minecraft.registry.RegistryKey.of(RegistryKeys.ITEM_GROUP, new Identifier(ChemLib.MOD_ID, name));
+        Registry.register(Registries.ITEM_GROUP, key.getValue(), builder
+                .displayName(Text.translatable(Util.createTranslationKey("itemGroup", key.getValue())))
+                .build()
+        );
+        return key;
+    }
 
     public static void register() throws IOException {
         // Get element JSON data
@@ -97,17 +100,17 @@ public class ItemRegistry {
         // Register items
         createElements(elements);
         createCompounds(compounds);
-        Registry.register(Registry.ITEM, new Identifier(ChemLib.MOD_ID, "periodic_table"), PERIODIC_TABLE_ITEM);
-        ELEMENTS.forEach(item -> Registry.register(Registry.ITEM, new Identifier(ChemLib.MOD_ID, item.getChemicalName()), item));
-        COMPOUNDS.forEach(item -> Registry.register(Registry.ITEM, new Identifier(ChemLib.MOD_ID, item.getChemicalName()), item));
-        COMPOUND_DUSTS.forEach(item -> Registry.register(Registry.ITEM, new Identifier(ChemLib.MOD_ID, String.format("%s_%s", item.getChemicalName(), item.getItemType().asString())), item));
-        METAL_DUSTS.forEach(item -> Registry.register(Registry.ITEM, new Identifier(ChemLib.MOD_ID, String.format("%s_%s", item.getChemicalName(), item.getItemType().asString())), item));
-        NUGGETS.forEach(item -> Registry.register(Registry.ITEM, new Identifier(ChemLib.MOD_ID, String.format("%s_%s", item.getChemicalName(), item.getItemType().asString())), item));
-        INGOTS.forEach(item -> Registry.register(Registry.ITEM, new Identifier(ChemLib.MOD_ID, String.format("%s_%s", item.getChemicalName(), item.getItemType().asString())), item));
-        PLATES.forEach(item -> Registry.register(Registry.ITEM, new Identifier(ChemLib.MOD_ID, String.format("%s_%s", item.getChemicalName(), item.getItemType().asString())), item));
+        Registry.register(Registries.ITEM, new Identifier(ChemLib.MOD_ID, "periodic_table"), PERIODIC_TABLE_ITEM);
+        ELEMENTS.forEach(item -> Registry.register(Registries.ITEM, new Identifier(ChemLib.MOD_ID, item.getChemicalName()), item));
+        COMPOUNDS.forEach(item -> Registry.register(Registries.ITEM, new Identifier(ChemLib.MOD_ID, item.getChemicalName()), item));
+        COMPOUND_DUSTS.forEach(item -> Registry.register(Registries.ITEM, new Identifier(ChemLib.MOD_ID, String.format("%s_%s", item.getChemicalName(), item.getItemType().asString())), item));
+        METAL_DUSTS.forEach(item -> Registry.register(Registries.ITEM, new Identifier(ChemLib.MOD_ID, String.format("%s_%s", item.getChemicalName(), item.getItemType().asString())), item));
+        NUGGETS.forEach(item -> Registry.register(Registries.ITEM, new Identifier(ChemLib.MOD_ID, String.format("%s_%s", item.getChemicalName(), item.getItemType().asString())), item));
+        INGOTS.forEach(item -> Registry.register(Registries.ITEM, new Identifier(ChemLib.MOD_ID, String.format("%s_%s", item.getChemicalName(), item.getItemType().asString())), item));
+        PLATES.forEach(item -> Registry.register(Registries.ITEM, new Identifier(ChemLib.MOD_ID, String.format("%s_%s", item.getChemicalName(), item.getItemType().asString())), item));
         CHEMICAL_BLOCK_ITEMS.forEach(item -> {
             String path = (item.getType() == ChemicalBlockType.METAL) ? "%s_metal_block" : "%s_lamp_block";
-            Registry.register(Registry.ITEM, new Identifier(ChemLib.MOD_ID, String.format(path, item.getChemicalName())), item);
+            Registry.register(Registries.ITEM, new Identifier(ChemLib.MOD_ID, String.format(path, item.getChemicalName())), item);
         });
     }
 
@@ -191,7 +194,7 @@ public class ItemRegistry {
     */
 
      public static void createItemByType(Item element, Identifier elementIdentifier, ChemicalItemType chemicalItemType, ItemGroup tab) {
-         ChemicalItem chemicalItem = new ChemicalItem(element, chemicalItemType, new FabricItemSettings().group(tab));
+         ChemicalItem chemicalItem = new ChemicalItem(element, chemicalItemType, new FabricItemSettings());
          switch(chemicalItemType) {
              case COMPOUND -> COMPOUND_DUSTS.add(chemicalItem);
              case DUST -> METAL_DUSTS.add(chemicalItem);
@@ -224,16 +227,16 @@ public class ItemRegistry {
                         boolean hasItem = object.has("has_item") && object.get("has_item").getAsBoolean();
                         if (metalType == MetalType.METAL) {
                             // Register metal items & blocks
-                            createItemByType(element, elementIdentifier, ChemicalItemType.PLATE, METALS_TAB);
+                            createItemByType(element, elementIdentifier, ChemicalItemType.PLATE, Registries.ITEM_GROUP.get(METALS_TAB));
                             if (!hasItem) {
-                                createItemByType(element, elementIdentifier, ChemicalItemType.NUGGET, METALS_TAB);
-                                createItemByType(element, elementIdentifier, ChemicalItemType.INGOT, METALS_TAB);
+                                createItemByType(element, elementIdentifier, ChemicalItemType.NUGGET, Registries.ITEM_GROUP.get(METALS_TAB));
+                                createItemByType(element, elementIdentifier, ChemicalItemType.INGOT, Registries.ITEM_GROUP.get(METALS_TAB));
                                 createChemicalBlock(elementIdentifier, ChemicalBlockType.METAL);
                             } else if (elementName.equals("copper")) {
-                                createItemByType(element, elementIdentifier, ChemicalItemType.NUGGET, METALS_TAB);
+                                createItemByType(element, elementIdentifier, ChemicalItemType.NUGGET, Registries.ITEM_GROUP.get(METALS_TAB));
                             }
                         }
-                        createItemByType(element, elementIdentifier, ChemicalItemType.DUST, METALS_TAB);
+                        createItemByType(element, elementIdentifier, ChemicalItemType.DUST, Registries.ITEM_GROUP.get(METALS_TAB));
                     }
                     case LIQUID, GAS -> {
                         boolean hasFluid = object.has("has_fluid") && object.get("has_fluid").getAsBoolean();
@@ -297,7 +300,7 @@ public class ItemRegistry {
                 case SOLID -> {
                     boolean hasItem = object.get("has_item").getAsBoolean();
                     if (!hasItem) {
-                        createItemByType(compoundItem, compoundIdentifier, ChemicalItemType.COMPOUND, COMPOUNDS_TAB);
+                        createItemByType(compoundItem, compoundIdentifier, ChemicalItemType.COMPOUND, Registries.ITEM_GROUP.get(COMPOUNDS_TAB));
                     }
                 }
                 case LIQUID, GAS -> {
@@ -337,11 +340,11 @@ public class ItemRegistry {
         if (type == ChemicalBlockType.METAL) {
             String path = "%s_metal_block";
             identifier = new Identifier(ChemLib.MOD_ID, String.format(path, chemical.getPath()));
-            settings.group(METALS_TAB);
+            //settings.group(METALS_TAB);
         } else {
             String path = "%s_lamp_block";
             identifier = new Identifier(ChemLib.MOD_ID, String.format(path, chemical.getPath()));
-            settings.group(MISC_TAB);
+            //settings.group(MISC_TAB);
         }
         ChemicalBlock chemicalBlock = BlockRegistry.registerBlock(chemical, identifier, type);
         CHEMICAL_BLOCK_ITEMS.add(new ChemicalBlockItem(chemicalBlock, settings));
