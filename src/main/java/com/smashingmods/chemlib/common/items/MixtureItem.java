@@ -94,7 +94,9 @@ public class MixtureItem extends Item implements Chemical {
 
         for (String name : components.keySet()) {
             ItemRegistry.getElementByName(name).ifPresent(elementItem -> builder.append(" + ").append(elementItem.getChemicalName()));
-            ItemRegistry.getCompoundByName(name).ifPresent(compoundItem -> builder.append(" + ").append(String.format("(%s)", compoundItem.getChemicalName())));
+            ItemRegistry.getCompoundByName(name).ifPresentOrElse(compoundItem -> builder.append(" + ").append(String.format("(%s)", compoundItem.getChemicalName())), ()->{
+                builder.append(" + ").append(name);
+            });
 
             Integer count = components.get(name);
             if (count > 1) {
